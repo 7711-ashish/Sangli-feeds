@@ -61,7 +61,7 @@ router.get("/hourly-forecast",async (req,res)=>{
 
 
 router.get("/relativehumidity_2m",async (req,res)=>{
-    https.get('https://api.open-meteo.com/v1/forecast?latitude=16.85438&longitude=74.56417&hourly=relativehumidity_2m/timezone=IST', (resp) => {
+    https.get('https://api.open-meteo.com/v1/forecast?latitude=16.85438&longitude=74.56417&hourly=relativehumidity_2m&timezone=IST', (resp) => {
         let data = '';
         resp.on('data', (chunk) => {
             data += chunk;
@@ -119,7 +119,7 @@ router.get("/apparent_temperature",async (req,res)=>{
 
 router.get("/rain",async (req,res)=>{
 
-    https.get('https://api.open-meteo.com/v1/forecast?latitude=16.85438&longitude=74.56417&hourly=rain/timezone=IST', (resp) => {
+    https.get('https://api.open-meteo.com/v1/forecast?latitude=16.85438&longitude=74.56417&hourly=rain&timezone=IST', (resp) => {
         let data = '';
         resp.on('data', (chunk) => {
             data += chunk;
