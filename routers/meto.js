@@ -5,10 +5,23 @@ const User = require("../db/User")
 const https = require("https");
 const axios = require('axios');
 
+var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); 
+        var yyyy = today.getFullYear();
+        let hour = today.getHours();
+        var hours = ""
+        console.log(hour)
+        if(hour>9)
+            hours = String(hour)
+        else{
+            hours = '0'+String(hour)
+        }     
+        today = yyyy+'-'+mm+'-'+dd+'T'+hours+':00';
+
 router.get("/soil", async (req, res) => {
 
-    https.get('https://api.open-meteo.com/v1/forecast?latitude=16.85438&longitude=74.56417&hourly=soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm ,soil_temperature_54cm&timezone=IST', (resp) => {
-
+    https.get('https://api.open-meteo.com/v1/forecast?latitude=16.85438&longitude=74.56417&hourly=soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm&timezone=IST', (resp) => {
 
         let data = '';
         resp.on('data', (chunk) => {
@@ -16,11 +29,41 @@ router.get("/soil", async (req, res) => {
         });
         resp.on('end', () => {
             const result = JSON.parse(data);
+            var index = result.hourly.time.indexOf(today)
+    
             const rslt = {
-                soil_temperature_0cm: result.hourly.soil_temperature_0cm,
-                soil_temperature_6cm: result.hourly.soil_temperature_6cm,
-                soil_temperature_18cm: result.hourly.soil_temperature_18cm,
-                soil_temperature_54cm: result.hourly.soil_temperature_54cm,
+                soil_temperature_0cm: result.hourly.soil_temperature_0cm[index],
+                soil_temperature_6cm: result.hourly.soil_temperature_6cm[index],
+                soil_temperature_18cm: result.hourly.soil_temperature_18cm[index],
+                soil_temperature_54cm: result.hourly.soil_temperature_54cm[index],
+            }
+            res.send(rslt);
+        });
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
+    })
+})
+
+router.get("/soil/moist", async (req, res) => {
+
+    https.get('https://api.open-meteo.com/v1/forecast?latitude=16.85438&longitude=74.56417&hourly=soil_moisture_0_1cm,soil_moisture_1_3cm,soil_moisture_3_9cm,soil_moisture_9_27cm,soil_moisture_27_81cm&timezone=IST', (resp) => {
+
+        const d = new Date();
+        let hour = d.getHours();
+
+        let data = '';
+        resp.on('data', (chunk) => {
+            data += chunk;
+        });
+        resp.on('end', () => {
+            const result = JSON.parse(data);
+            var index = result.hourly.time.indexOf(today)
+            const rslt = {
+                soil_moisture_0_1cm: result.hourly.soil_moisture_0_1cm[index],
+                soil_moisture_1_3cm: result.hourly.soil_moisture_1_3cm[index],
+                soil_moisture_3_9cm: result.hourly.soil_moisture_3_9cm[index],
+                soil_moisture_9_27cm: result.hourly.soil_moisture_9_27cm[index],
+                soil_moisture_27_81cm: result.hourly.soil_moisture_27_81cm[index]
             }
             res.send(rslt);
         });
