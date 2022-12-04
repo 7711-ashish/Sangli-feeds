@@ -19,9 +19,15 @@ var today = new Date();
         }     
         today = yyyy+'-'+mm+'-'+dd+'T'+hours+':00';
 
-router.get("/soil", async (req, res) => {
+router.get("/soil/:lat/:longi", async (req, res) => {
 
-    https.get('https://api.open-meteo.com/v1/forecast?latitude=16.85438&longitude=74.56417&hourly=soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm&timezone=IST', (resp) => {
+    let longi = req.params.longi
+    let lat = req.params.lat
+
+    console.log(longi)
+    console.log(lat)
+
+    https.get(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${longi}&hourly=soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm&timezone=IST`, (resp) => {
 
         let data = '';
         resp.on('data', (chunk) => {
@@ -44,9 +50,12 @@ router.get("/soil", async (req, res) => {
     })
 })
 
-router.get("/soil/moist", async (req, res) => {
+router.get("/soil/moist/:lat/:longi", async (req, res) => {
 
-    https.get('https://api.open-meteo.com/v1/forecast?latitude=16.85438&longitude=74.56417&hourly=soil_moisture_0_1cm,soil_moisture_1_3cm,soil_moisture_3_9cm,soil_moisture_9_27cm,soil_moisture_27_81cm&timezone=IST', (resp) => {
+    let longi = await req.params.longi
+    let lat = await req.params.lat
+
+    https.get(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${longi}&hourly=soil_moisture_0_1cm,soil_moisture_1_3cm,soil_moisture_3_9cm,soil_moisture_9_27cm,soil_moisture_27_81cm&timezone=IST`, (resp) => {
 
         const d = new Date();
         let hour = d.getHours();
